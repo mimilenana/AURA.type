@@ -1,0 +1,667 @@
+/* ------------------------------------------------------------
+   OBERFLÄCHE: sieht aus wie eine Arbeitsstation von 1990. Alles ist
+   schwarz und weiß, die Fenster haben eine schwarze Titelleiste und
+   einen einfachen Rahmen, der Hintergrund ist leicht gekörnt (die Körnung
+   entsteht in sketch.js). Die Schrift ist überall Space Mono.
+
+   Die Zahlen oben in :root sind eure Stellschrauben.
+   ------------------------------------------------------------ */
+
+/* Space Mono (Google Fonts) liegt in static/schrift/ und wird hier eingebunden. */
+@font-face {
+  font-family: "Space Mono";
+  font-weight: 400;
+  src: url("/schrift/SpaceMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-weight: 700;
+  src: url("/schrift/SpaceMono-Bold.ttf") format("truetype");
+}
+
+:root {
+  --schwarz: #000;
+  --weiss: #fff;
+  --grau: #fcecf4;            /* Fensterfläche (heller Rosaton; heißt noch "grau", ist aber rosa) */
+  --tisch: #fcecf4;           /* Hintergrund hinter den Fenstern (mit Körnung, siehe sketch.js) */
+  --schatten: 6px;            /* wie weit der harte Schatten der Fenster reicht */
+  --linie: 2px;               /* Stärke aller Rahmen */
+  --schrift: "Space Mono", ui-monospace, Menlo, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  color: var(--schwarz);
+  font: 14px/1.4 var(--schrift);
+  background: var(--tisch);
+}
+
+canvas {
+  display: block;
+}
+
+/* ---------- Eingabe (Name Tool) ---------- */
+
+.eingabe-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  font-size: clamp(26px, 3.6vw, 52px);
+  line-height: 1.1;
+}
+
+.ueberschrift {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+#name {
+  flex: 1 1 240px;
+  min-width: 0;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--schwarz);
+  background: var(--weiss);
+  border: var(--linie) solid var(--schwarz);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--schwarz);
+  outline: none;
+  padding: 0.05em 0.3em;
+  caret-color: var(--schwarz);
+  caret-shape: block;
+}
+
+#name::placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+#name:focus {
+  box-shadow: none;
+  outline: 4px solid var(--schwarz);
+  outline-offset: -4px;
+}
+
+/* ---------- Arbeitsfläche: Eingabe oben, darunter vier Fenster ---------- */
+
+.arbeitsflaeche {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px max-content 330px;
+  justify-content: center;
+  align-items: start;
+  gap: 36px;
+  padding: 30px 36px 36px;
+}
+
+/* Das Namensfenster reicht über alle Spalten. Seine eigene Breite darf aber nicht in die
+   Berechnung der Spalten eingehen, sonst würde das Animationsfenster breiter als die Animation. */
+#fenster-name {
+  grid-column: 1 / -1;
+  width: 0;
+  min-width: 100%;
+}
+
+.fenster {
+  background: var(--grau);
+  border: var(--linie) solid var(--schwarz);
+  box-shadow: var(--schatten) var(--schatten) 0 var(--schwarz);
+}
+
+.titel {
+  padding: 2px 8px;
+  background: var(--schwarz);
+  color: var(--weiss);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+.inhalt {
+  padding: 14px;
+}
+
+.leinwand {
+  padding: 0;
+  line-height: 0;
+  background: var(--weiss);
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: var(--linie) solid var(--schwarz);
+  padding-bottom: 2px;
+}
+
+.gruppe {
+  margin-bottom: 20px;
+}
+
+.klein {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* ---------- Bedienelemente ---------- */
+
+button,
+select,
+input {
+  font-family: var(--schrift);
+}
+
+button,
+select {
+  font: inherit;
+  color: var(--schwarz);
+  background: var(--weiss);
+  border: var(--linie) solid var(--schwarz);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--schwarz);
+  cursor: pointer;
+}
+
+button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 7px 10px;
+  text-align: center;
+}
+
+button:hover:not(:disabled),
+button:focus-visible {
+  background: var(--schwarz);
+  color: var(--weiss);
+}
+
+button:active:not(:disabled) {
+  box-shadow: none;
+  transform: translate(3px, 3px);
+}
+
+select {
+  appearance: none;
+  width: 100%;
+  margin-top: 10px;
+  padding: 6px 30px 6px 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0h12L6 8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+}
+
+select:disabled {
+  color: #8a5a70;
+  cursor: default;
+}
+
+.haken {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.haken input {
+  appearance: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  background: var(--weiss);
+  border: var(--linie) solid var(--schwarz);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.haken input:checked::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--schwarz);
+}
+
+.regler {
+  display: flex;
+  justify-content: space-between;
+}
+
+input[type="range"] {
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  margin: 4px 0 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--schwarz);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--schwarz);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 22px;
+  margin-top: -9px;
+  background: var(--weiss);
+  border: var(--linie) solid var(--schwarz);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--schwarz);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 18px;
+  background: var(--weiss);
+  border: var(--linie) solid var(--schwarz);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--schwarz);
+}
+
+/* die vier Farbmodi: Hintergrund mit einem Punkt in Schriftfarbe */
+.farbmodi {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.farbmodi button {
+  position: relative;
+  height: 48px;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  place-content: center;
+  box-shadow: 3px 3px 0 var(--schwarz);
+}
+
+.farbmodi button i {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+.farbmodi button:hover:not(:disabled) {
+  background-color: inherit;
+  color: inherit;
+}
+
+.farbmodi button.gewaehlt {
+  outline: 4px solid var(--schwarz);
+  outline-offset: 1px;
+}
+
+.farbmodi button b {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  font-size: 11px;
+  mix-blend-mode: difference;
+  color: #fff;
+}
+
+.status {
+  margin-top: 4px;
+  padding: 5px 8px;
+  background: var(--schwarz);
+  color: var(--weiss);
+  font-size: 12px;
+}
+
+.status::before {
+  content: "> ";
+}
+
+/* leer = unsichtbar: die Zeile erscheint nur, wenn es etwas zu melden gibt */
+.status:empty {
+  display: none;
+}
+
+/* während der Aufnahme lässt sich nichts verstellen */
+body.nimmt-auf #name,
+body.nimmt-auf .sperre {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+body.nimmt-auf #video-knopf {
+  background: var(--schwarz);
+  color: var(--weiss);
+}
+
+/* ---------- Ausklappbare Einstellungen ---------- */
+
+.einstellungen summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-bottom: 2px;
+  border-bottom: var(--linie) solid var(--schwarz);
+  user-select: none;
+}
+
+.einstellungen summary::-webkit-details-marker {
+  display: none;
+}
+
+.einstellungen summary::before {
+  content: "[+] ";
+}
+
+.einstellungen[open] summary::before {
+  content: "[-] ";
+}
+
+.einstellungen summary:hover {
+  background: var(--schwarz);
+  color: var(--weiss);
+}
+
+.einstellung-haken {
+  margin-top: 12px;
+}
+
+.einstellungen .regler {
+  margin-top: 12px;
+}
+
+/* ---------- Analyse ---------- */
+
+.analyse-name {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  word-break: break-all;
+}
+
+.analyse-modus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 16px;
+}
+
+.farbmuster {
+  position: relative;
+  flex: none;
+  width: 26px;
+  height: 20px;
+  border: var(--linie) solid var(--schwarz);
+}
+
+.farbmuster::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  margin: auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--punkt, #000);
+}
+
+.balken {
+  margin-bottom: 14px;
+}
+
+.balken-kopf,
+.balken-enden {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+/* Balkendiagramm: ein gefüllter Balken von links bis zum Wert, darunter eine Skala. Nichts davon ist
+   verstellbar (keine Griffe, kein Zeiger). */
+.diagramm {
+  height: 22px;
+  margin: 4px 0 0;
+  border: var(--linie) solid var(--schwarz);
+  background: var(--weiss);
+}
+
+.diagramm b {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--schwarz);
+}
+
+.skala {
+  height: 5px;
+  margin-bottom: 2px;
+  /* kleine Striche bei 0, 25, 50, 75 und 100 Prozent */
+  background:
+    linear-gradient(var(--schwarz), var(--schwarz)) 0 0 / 2px 100% no-repeat,
+    linear-gradient(var(--schwarz), var(--schwarz)) 25% 0 / 2px 100% no-repeat,
+    linear-gradient(var(--schwarz), var(--schwarz)) 50% 0 / 2px 100% no-repeat,
+    linear-gradient(var(--schwarz), var(--schwarz)) 75% 0 / 2px 100% no-repeat,
+    linear-gradient(var(--schwarz), var(--schwarz)) 100% 0 / 2px 100% no-repeat;
+}
+
+.buchstaben {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.b {
+  display: inline-grid;
+  place-content: center;
+  width: 28px;
+  height: 28px;
+  font-weight: 700;
+  border: var(--linie) solid var(--schwarz);
+  background: var(--weiss);
+  color: var(--schwarz);
+}
+
+/* jede Sorte Buchstabe bekommt ihre eigene Füllung, ohne Farbe */
+.b.hart { background: var(--schwarz); color: var(--weiss); }
+.b.weich { background: var(--weiss); }
+.b.hell {
+  background: var(--weiss) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' x='0' y='0'/%3E%3Crect width='1' height='1' x='2' y='2'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+  box-shadow: inset 0 0 0 4px var(--weiss);
+}
+.b.dunkel {
+  background: var(--schwarz) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect fill='white' width='1' height='1' x='0' y='0'/%3E%3Crect fill='white' width='1' height='1' x='2' y='2'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+  color: var(--weiss);
+  box-shadow: inset 0 0 0 4px var(--schwarz);
+}
+.b.halbdunkel {
+  background: var(--grau);
+  box-shadow: inset 0 -6px 0 0 var(--schwarz);
+}
+.b.neutral { border-style: dashed; background: transparent; }
+
+.legende {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 8px;
+  margin: 0;
+  padding: 10px 0 0;
+  list-style: none;
+  font-size: 12px;
+  border-top: var(--linie) solid var(--schwarz);
+}
+
+.legende li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legende .b {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+}
+
+/* ---------- Anordnung: die Fenster liegen leicht versetzt, wie echte Fenster auf einem Schreibtisch ---------- */
+
+#fenster-steuerung {
+  margin-top: 0;
+}
+
+#fenster-animation {
+  margin-top: 34px;
+}
+
+#fenster-export {
+  margin-left: 26px;
+}
+
+.spalte {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+#fenster-erklaerung {
+  margin-top: 10px;
+  margin-right: 28px;
+}
+
+#fenster-analyse {
+  margin-left: 28px;
+}
+
+/* ---------- Erklärung ---------- */
+
+.text {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.text ol,
+.text ul {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.text li {
+  margin-bottom: 5px;
+}
+
+.text .klein {
+  margin: 0;
+}
+
+.tipp {
+  margin: 0 0 16px;
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  background: var(--weiss);
+  border: var(--linie) dashed var(--schwarz);
+}
+
+/* ---------- schmale Fenster ---------- */
+
+@media (max-width: 1300px) {
+  /* Schmaler Bildschirm (Tablet, Handy): alles in einer Spalte. Reihenfolge von oben nach unten: Eingabe, Animation,
+     Einstellungen, Export, Erklärung, Analyse. Die beiden Spalten des großen Layouts lösen sich auf. */
+  .arbeitsflaeche {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    align-items: start;
+    gap: 22px;
+    padding: 20px 16px 32px;
+  }
+
+  .spalte {
+    display: contents;
+  }
+
+  #fenster-name,
+  #fenster-steuerung,
+  #fenster-export,
+  #fenster-erklaerung,
+  #fenster-analyse,
+  #fenster-animation {
+    grid-column: 1;
+    grid-row: auto;
+    margin: 0;
+    width: min(100%, 520px);
+  }
+
+  #fenster-name { order: 0; width: 100%; min-width: 0; }
+  /* die Animation ist etwas schmaler als das Namensfenster darüber und steht mittig */
+  #fenster-animation { order: 1; width: max-content; max-width: 100%; }
+  #fenster-steuerung { order: 2; }
+  #fenster-export { order: 3; }
+  #fenster-erklaerung { order: 4; }
+  #fenster-analyse { order: 5; }
+
+  /* die Eingabe ist hier größer, weil sie die Hauptsache ist */
+  .eingabe-zeile {
+    font-size: clamp(34px, 7vw, 60px);
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1300px) {
+  /* Mittlere Breite (Tablet, schmales Fenster): oben die Eingabe, darunter links die Animation und rechts davon
+     untereinander Control Tool und Analyse. Ganz unten links das Readme, daneben der Export. */
+  .arbeitsflaeche {
+    grid-template-columns: max-content minmax(0, 360px);
+    justify-content: center;
+    justify-items: stretch;
+    gap: 22px 28px;
+    padding: 20px;
+  }
+
+  /* das Namensfenster reicht über beide Spalten, darf deren Breite aber nicht bestimmen */
+  #fenster-name { grid-column: 1 / -1; width: 0; min-width: 100%; order: 0; }
+  #fenster-animation { grid-column: 1; grid-row: 2 / span 2; width: max-content; max-width: 100%; order: 0; }
+  #fenster-steuerung { grid-column: 2; grid-row: 2; width: auto; order: 0; }
+  #fenster-analyse { grid-column: 2; grid-row: 3; width: auto; order: 0; }
+  /* Readme links unter der Animation, direkt neben dem Export. Seine Textzeilen dürfen die Breite der linken
+     Spalte nicht bestimmen (sie richtet sich nach der Animation). */
+  #fenster-erklaerung { grid-column: 1; grid-row: 4; width: 0; min-width: 100%; order: 0; }
+  #fenster-export { grid-column: 2; grid-row: 4; width: auto; order: 0; }
+}
+
+@media (max-width: 700px) {
+  .arbeitsflaeche {
+    gap: 18px;
+    padding: 16px 14px 28px;
+  }
+
+  .eingabe-zeile {
+    font-size: clamp(34px, 9vw, 52px);
+  }
+}

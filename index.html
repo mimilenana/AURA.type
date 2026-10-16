@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/img/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Namensstil</title>
+  </head>
+  <body>
+    <!-- Drei Spalten: links die Einstellungen und darunter der Export, in der Mitte die Animation, rechts oben die
+         Erklärung und direkt darunter die Analyse. Darüber die Eingabe über die ganze Breite. -->
+    <main class="arbeitsflaeche">
+
+      <section class="fenster" id="fenster-name">
+        <div class="titel">AURA.type</div>
+        <div class="inhalt eingabe-zeile">
+          <label class="ueberschrift" for="name">Type your name:</label>
+          <input id="name" type="text" placeholder="Milena" maxlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" autofocus />
+        </div>
+      </section>
+
+      <div class="spalte">
+        <section class="fenster" id="fenster-steuerung">
+          <div class="titel">Control Tool 1.0</div>
+          <div class="inhalt">
+            <p class="tipp">Tipp: Mit „Name steuert“ aus wählst du den Modus selbst.</p>
+
+            <div class="gruppe">
+              <h2>Modus</h2>
+              <label class="haken"><input id="automatik" type="checkbox" checked /><span>Name steuert</span></label>
+              <select id="modus" aria-label="Modus"></select>
+            </div>
+
+            <div class="gruppe">
+              <h2>Farbmodus</h2>
+              <div id="farbmodi" class="farbmodi"></div>
+              <div id="farbname" class="klein"></div>
+            </div>
+
+            <details class="gruppe einstellungen">
+              <summary>Einstellungen</summary>
+              <label class="haken einstellung-haken"><input id="nebeneinander" type="checkbox" /><span>Buchstaben nebeneinander</span></label>
+              <label class="regler" for="geschwindigkeit"><span>Geschwindigkeit</span><output id="geschwindigkeit-wert">1,00×</output></label>
+              <input id="geschwindigkeit" type="range" min="0.2" max="2" step="0.05" value="1" />
+              <label class="regler" for="intensitaet"><span>Intensität</span><output id="intensitaet-wert">1,00×</output></label>
+              <input id="intensitaet" type="range" min="0.2" max="2" step="0.05" value="1" />
+              <label class="regler" for="textgroesse"><span>Textgröße</span><output id="textgroesse-wert">100 %</output></label>
+              <input id="textgroesse" type="range" min="0.4" max="2" step="0.05" value="1" />
+            </details>
+          </div>
+        </section>
+
+        <section class="fenster" id="fenster-export">
+          <div class="titel">Export Tool 1.0</div>
+          <div class="inhalt">
+            <div class="gruppe">
+              <h2>Video (Story)</h2>
+              <label class="regler" for="laenge"><span>Länge</span><output id="laenge-wert">10 s</output></label>
+              <input id="laenge" type="range" min="3" max="60" step="1" value="10" />
+              <button id="video-knopf" type="button">Video aufnehmen</button>
+            </div>
+
+            <div class="gruppe">
+              <h2>Bild</h2>
+              <button id="bild-knopf" type="button">PNG speichern</button>
+            </div>
+
+            <!-- erscheint nur, wenn es etwas zu melden gibt (Aufnahme läuft, gespeichert, Fehler) -->
+            <div id="status" class="status" role="status"></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="fenster" id="fenster-animation">
+        <div class="titel">Animation Tool 1.0</div>
+        <div class="inhalt leinwand" id="leinwand"></div>
+      </section>
+
+      <div class="spalte">
+        <section class="fenster" id="fenster-erklaerung">
+          <div class="titel">Readme Tool 1.0</div>
+          <div class="inhalt text">
+            <h2>Was passiert hier?</h2>
+            <ol>
+              <li>Tippe deinen Namen ein.</li>
+              <li>Das Tool wertet die Buchstaben einzeln danach aus, ob sie hart/weich und dunkel/hell klingen (Analysis Tab). Daraus ergibt sich Animation und Farbcode.</li>
+              <li>Downloade die Animation als Video/Bild für deine Insta Story.</li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="fenster" id="fenster-analyse">
+          <div class="titel">Analysis Tool 1.0</div>
+          <div class="inhalt">
+            <div id="a-name" class="analyse-name"></div>
+            <div class="analyse-modus"><span id="a-farbmuster" class="farbmuster"></span><span id="a-modus"></span></div>
+
+            <!-- zwei Balken wie in einem Diagramm: sie zeigen Werte an, man kann nichts verstellen -->
+            <div class="balken">
+              <div class="balken-kopf"><span>Härte</span><span id="a-haerte-wert"></span></div>
+              <div class="diagramm" role="img" aria-label="Härte"><b id="a-haerte-balken"></b></div>
+              <div class="skala"></div>
+              <div class="balken-enden"><span>weich</span><span>hart</span></div>
+            </div>
+            <div class="balken">
+              <div class="balken-kopf"><span>Helligkeit</span><span id="a-helligkeit-wert"></span></div>
+              <div class="diagramm" role="img" aria-label="Helligkeit"><b id="a-helligkeit-balken"></b></div>
+              <div class="skala"></div>
+              <div class="balken-enden"><span>dunkel</span><span>hell</span></div>
+            </div>
+
+            <h2>Buchstaben</h2>
+            <div id="a-buchstaben" class="buchstaben"></div>
+            <ul class="legende">
+              <li><span class="b hart">a</span> hart</li>
+              <li><span class="b weich">a</span> weich</li>
+              <li><span class="b hell">a</span> hell</li>
+              <li><span class="b dunkel">a</span> dunkel</li>
+              <li><span class="b halbdunkel">a</span> halbdunkel</li>
+              <li><span class="b neutral">a</span> neutral</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+
+    </main>
+
+    <script type="module" src="/src/sketch.js"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: #fff; font-family: system-ui, sans-serif; overflow: hidden; }
+body.dark { background: #000; }
+canvas { display: block; width: 100vw; height: 100vh; }
+
+.ui {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  display: flex; gap: 18px; align-items: center; flex-wrap: wrap; justify-content: center;
+  background: rgba(245,245,245,.92); color: #333; border: 1px solid #ddd; border-radius: 12px;
+  padding: 12px 16px; max-width: calc(100vw - 32px);
+}
+body.dark .ui { background: rgba(20,20,20,.88); color: #bbb; border-color: #333; }
+.ui input[type=text] {
+  background: #fff; color: #000; border: 1px solid #bbb; border-radius: 6px;
+  padding: 8px 10px; font-size: 16px; width: 240px;
+}
+.ui label { display: flex; flex-direction: column; font-size: 11px; gap: 4px; opacity: .8; }
+.ui label.chk { flex-direction: row; align-items: center; gap: 6px; }
+.ui input[type=range] { width: 110px; accent-color: #555; }
+.ui button { background: #fff; color: #333; border: 1px solid #bbb; border-radius: 6px; padding: 8px 10px; cursor: pointer; }

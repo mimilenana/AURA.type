@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nadel-Schrift</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="ui">
+  <input id="name" type="text" value="whole different animal" maxlength="40" placeholder="Text eintippen">
+  <label>Dichte <input id="density" type="range" min="0.2" max="2" step="0.05" value="1"></label>
+  <label>Länge <input id="length" type="range" min="0.3" max="2" step="0.05" value="1"></label>
+  <label>Nadeln pro Stern <input id="needles" type="range" min="3" max="14" step="1" value="6"></label>
+  <label>Ausbruch-Stärke <input id="burstPower" type="range" min="0" max="2" step="0.05" value="1"></label>
+  <label>Häufigkeit <input id="burstFreq" type="range" min="0.2" max="2" step="0.05" value="1"></label>
+  <label>Bewegung <input id="motion" type="range" min="0" max="2" step="0.05" value="0.6"></label>
+  <label class="chk"><input id="invert" type="checkbox"> Invertieren</label>
+  <button id="ui-hide">UI ausblenden (H)</button>
+</div>
+
+<script type="module" src="/main.js"></script>
+</body>
+</html>
