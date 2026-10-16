@@ -41,6 +41,7 @@
 import p5 from 'p5';
 import './oberflaeche.css';
 import { startingText } from './config.js';
+import { fontOptions } from './lib/font/fonts.js';
 
 import { analysiereName } from './namensstil/analyse.js';
 import { setzeVersetzt, setzeZeilen } from './namensstil/wort.js';
@@ -49,8 +50,10 @@ import { typoFuer } from './namensstil/stil.js';
 import { MODI, modusFuer, bereiteModus, zeichneModus, bereicheFuer } from './namensstil/modi.js';
 import { FARBMODI, farbenFuer } from './namensstil/farben.js';
 
-// Die Schriftdatei im Ordner fonts/. Genauen Dateinamen eintragen!
-const SCHRIFT = 'fonts/NotoSans-VariableFont_wdth,wght.ttf';
+// Die Schriftdatei im Ordner fonts/ (Dateiname ohne Endung). Über die Schriftliste von Vite wird sie
+// beim Bauen mit ins Ergebnis kopiert; ein einfacher Pfad wie 'fonts/...' fände sie dort nicht mehr.
+const SCHRIFT_NAME = 'NotoSans-VariableFont_wdth,wght';
+const SCHRIFT = fontOptions[SCHRIFT_NAME];
 
 // Auf dem Handy: so breit ist die Animation im Verhältnis zum Namensfenster darüber (1 = gleich breit)
 const ANIMATION_ANTEIL = 0.78;
@@ -121,7 +124,7 @@ window.setup = async function setup() {
       console.warn('Die Schrift ist kein variabler Font: die Schriftstärke aus stil.js wird nicht angewendet.');
     }
   } catch (e) {
-    fehler = `Schrift nicht gefunden: ${SCHRIFT}\nDateinamen in sketch.js (SCHRIFT) prüfen.`;
+    fehler = `Schrift nicht gefunden: ${SCHRIFT_NAME}\nDateinamen in sketch.js (SCHRIFT_NAME) prüfen.`;
     console.warn(fehler, e);
   }
 };
